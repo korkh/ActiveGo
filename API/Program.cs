@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using Storage;
 
@@ -14,14 +13,24 @@ builder.Services.AddDbContext<DataContext>(opt => {
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+//creating CORS policy
+builder.Services.AddCors(options => {
+    options.AddPolicy("CorsPolicy", policy => {
+        policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
+    });
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline. (Our middleware)
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//Using our CORS policy
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 
