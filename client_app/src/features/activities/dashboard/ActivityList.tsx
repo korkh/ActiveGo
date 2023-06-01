@@ -1,20 +1,12 @@
-import { Button, Item, Label, Segment } from "semantic-ui-react";
-import { IActivity } from "../../../app/layout/models/activity";
+import { observer } from "mobx-react-lite";
 import { SyntheticEvent, useState } from "react";
+import { Button, Item, Label, Segment } from "semantic-ui-react";
+import { useStore } from "../../../app/layout/stores/store";
 
-interface Props {
-  activities: IActivity[];
-  selectActivity: (id: string) => void;
-  deleteActivity: (id: string) => void;
-  submitting: boolean;
-}
+const ActivityList = () => {
+  const { activityStore } = useStore();
+  const { selectActivity, deleteActivity, activitiesByDates, loading } = activityStore;
 
-const ActivityList = ({
-  activities,
-  selectActivity,
-  deleteActivity,
-  submitting,
-}: Props) => {
   //To control buttons
   const [focus, setFocus] = useState("");
 
@@ -27,11 +19,11 @@ const ActivityList = ({
   };
 
   return (
-    <>
-      {activities.length !== 0 ? (
+    <div>
+      {activitiesByDates.length !== 0 ? (
         <Segment>
           <Item.Group divided>
-            {activities.map((activity) => (
+            {activitiesByDates.map((activity) => (
               <Item key={crypto.randomUUID()}>
                 <Item.Content>
                   <Item.Header as="a">{activity.title}</Item.Header>
@@ -51,7 +43,7 @@ const ActivityList = ({
                     />
                     <Button
                       name={activity.id}
-                      loading={submitting && focus === activity.id}
+                      loading={loading && focus === activity.id}
                       onClick={(e) => handleActivityDelete(e, activity.id)}
                       floated="right"
                       content="Delete"
@@ -67,8 +59,8 @@ const ActivityList = ({
       ) : (
         <h1 style={{ textAlign: "center" }}>NO ACTIVITIES FOUND</h1>
       )}
-    </>
+    </div>
   );
 };
 
-export default ActivityList;
+export default observer(ActivityList);
