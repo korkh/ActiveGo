@@ -21,6 +21,19 @@ export default class ActivityStore {
     );
   }
 
+  get groupedActivities() {
+    //Get array of objects {[key: string] : IActivity[]}
+    //and each object will have a key (activity.date) [key: string]
+    //and each date will have an array of activities inside IActivities[]
+    return Object.entries(
+      this.activitiesByDates.reduce((activities, activity) => {
+        const date = activity.date;
+        activities[date] = activities[date] ? [...activities[date], activity] : [activity];
+        return activities;
+      }, {} as {[key: string] : IActivity[]})
+    )
+  }
+
   //Using arrow function we no worried about binding actions inside the class (action.bound)
   //async is used if we want to manipulate promisies inside
   //async code we will hold inside try-catch but sync outside try-catch
