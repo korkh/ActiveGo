@@ -12,9 +12,9 @@ const HomePage = () => {
             alt="logo"
             style={{ marginBottom: 12 }}
           />
-          Uniactivities
+          ActiviGo
         </Header>
-        <Header as="h2" inverted content="Welcome to Uniactivities" />
+        <Header as="h2" inverted content="Welcome to ActiviGo" />
         <Button as={Link} to="/activities" size="huge" inverted>
           Take me to Activities!
         </Button>

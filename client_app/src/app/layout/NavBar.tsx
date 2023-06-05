@@ -11,7 +11,7 @@ const NavBar = () => {
             alt="logo"
             style={{ marginRight: "10px" }}
           />
-          Uniactivities
+          ActiviGo
         </Menu.Item>
         <Menu.Item as={NavLink} to="/activities" name="Activities" />
         <Menu.Item as={NavLink} to="/errors" name="Errors" />
