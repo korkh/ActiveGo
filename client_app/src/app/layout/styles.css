@@ -32,6 +32,10 @@ body {
   margin-left: 0.5em;
 }
 
+.masthead .ui.button:hover {
+  background-color: #69c0d1;
+}
+
 .masthead h1.ui.header {
   font-size: 4em;
   font-weight: normal;
