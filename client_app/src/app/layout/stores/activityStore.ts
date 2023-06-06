@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../../../api/agent";
 import { IActivity } from "../models/activity";
+import { format } from "date-fns";
 
 export default class ActivityStore {
   // activities: IActivity[] = []; //depricated. Updated with Map usage
@@ -17,7 +18,7 @@ export default class ActivityStore {
   //we need computed properties return activity by date
   get activitiesByDates() {
     return Array.from(this.activityRegistry.values()).sort(
-      (a, b) => Date.parse(a.date) - Date.parse(b.date)
+      (a, b) => a.date!.getTime() - b.date!.getTime()
     );
   }
 
@@ -27,11 +28,14 @@ export default class ActivityStore {
     //and each date will have an array of activities inside IActivities[]
     return Object.entries(
       this.activitiesByDates.reduce((activities, activity) => {
-        const date = activity.date;
-        activities[date] = activities[date] ? [...activities[date], activity] : [activity];
+        const date = format(activity.date!, "dd MMMM yyyy");
+        //returning group set of activities
+        activities[date] = activities[date]
+          ? [...activities[date], activity]
+          : [activity];
         return activities;
-      }, {} as {[key: string] : IActivity[]})
-    )
+      }, {} as { [key: string]: IActivity[] })
+    );
   }
 
   //Using arrow function we no worried about binding actions inside the class (action.bound)
@@ -80,7 +84,7 @@ export default class ActivityStore {
   };
 
   private setActivity = (activity: IActivity) => {
-    activity.date = activity.date.split("T")[0]; //separate date from time "T"
+    activity.date = new Date(activity.date!); //separate date from time "T"
     this.activityRegistry.set(activity.id, activity);
   };
 
