@@ -1,16 +1,26 @@
 using API.Extensions;
 using API.Middleware;
+using Domain;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//We will add policy to our controllers and This means that all single endpoint will require Authentication
+builder.Services.AddControllers(opt =>
+{
+    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+    opt.Filters.Add(new AuthorizeFilter(policy));
+});
 
-builder.Services.AddControllers();
 //Our custom services extension /API/Extensions/ApplicationServiceExtensions.cs
 //We need to pass only config, due to for services we are using "this"
 builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddIdentityServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -27,6 +37,8 @@ if (app.Environment.IsDevelopment())
 //Using our CORS policy
 app.UseCors("CorsPolicy");
 
+app.UseAuthentication(); //should be before authorization
+
 app.UseAuthorization();
 
 app.MapControllers();
@@ -36,8 +48,10 @@ var services = scope.ServiceProvider;
 try
 {
     var context = services.GetRequiredService<DataContext>();
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
     await context.Database.MigrateAsync();
-    await Seed.SeedData(context);
+    //await Seed.SeedData(context, userManager);
+    await Seed.SeedData(context, userManager);
 }
 catch (Exception ex)
 {
