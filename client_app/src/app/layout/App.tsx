@@ -4,13 +4,31 @@ import { Container } from "semantic-ui-react";
 import NavBar from "./NavBar";
 import HomePage from "../../features/activities/home/HomePage";
 import { ToastContainer } from "react-toastify";
+import { useStore } from "./stores/store";
+import { useEffect } from "react";
+import LoadingComponent from "./LoadingComponent";
+import ModalContainer from "../common/modals/modalContainer";
 
 function App() {
   const location = useLocation();
+  const { commonStore, userStore } = useStore();
+
+  useEffect(() => {
+    if (commonStore.token) {
+      userStore.getUser().finally(() => commonStore.setAppLoaded()); //turning off a loading flag
+    } else {
+      commonStore.setAppLoaded();
+    }
+  }, [commonStore, userStore]);
+
+  //Adding loading spinner
+  if (!commonStore.appLoaded)
+    return <LoadingComponent content="Loading app.." />;
 
   return (
     <>
-    <ToastContainer position='bottom-right' hideProgressBar theme='colored' />
+      <ModalContainer />
+      <ToastContainer position="bottom-right" hideProgressBar theme="colored" />
       {location.pathname === "/" ? (
         <HomePage />
       ) : (

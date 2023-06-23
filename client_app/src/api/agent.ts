@@ -3,12 +3,25 @@ import { IActivity } from "../app/layout/models/activity";
 import { toast } from "react-toastify";
 import { router } from "../app/layout/router/Routes";
 import { store } from "../app/layout/stores/store";
+import { IUser, IUserFormValues } from "../app/layout/models/user";
 
 const sleep = (delay: number) => {
   return new Promise((resolve) => {
     setTimeout(resolve, delay);
   });
 };
+
+axios.defaults.baseURL = "http://localhost:5000/api";
+
+const responseBody = <T>(response: AxiosResponse<T>) => response.data;
+
+axios.interceptors.request.use((config) => {
+  const token = store.commonStore.token;
+  //Every request if we do have a token we are going to add this token to headers
+  //as Authorization header
+  if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 axios.interceptors.response.use(
   async (response) => {
@@ -56,10 +69,6 @@ axios.interceptors.response.use(
   }
 );
 
-axios.defaults.baseURL = "http://localhost:5000/api";
-
-const responseBody = <T>(response: AxiosResponse<T>) => response.data;
-
 const requests = {
   get: <T>(url: string) => axios.get<T>(url).then(responseBody),
   post: <T>(url: string, body: {}) =>
@@ -77,8 +86,17 @@ const Activities = {
   delete: (id: string) => axios.delete<void>(`/activities/${id}`),
 };
 
+const Account = {
+  current: () => requests.get<IUser>("/account"),
+  login: (user: IUserFormValues) =>
+    requests.post<IUser>("/account/login", user),
+  register: (user: IUserFormValues) =>
+    requests.post<IUser>("/account/register", user),
+};
+
 const agent = {
   Activities,
+  Account,
 };
 
 export default agent;

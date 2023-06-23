@@ -1,4 +1,3 @@
-using System.Net;
 using System.Security.Claims;
 using API.DTOs;
 using API.Services;
@@ -49,13 +48,15 @@ namespace API.Controllers
             //Check for UserName duplicates
             if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.UserName))
             {
-                return BadRequest("The following UserName " + registerDto.UserName + " is already in use");
+                ModelState.AddModelError("username", "Username is already in use");
+                return ValidationProblem();
             }
 
             //Check for email duplicates
             if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
             {
-                return BadRequest("The following Email " + registerDto.Email + " is already in use");
+                ModelState.AddModelError("email", "Email is already in use");
+                return ValidationProblem();
             }
 
             var user = new AppUser
