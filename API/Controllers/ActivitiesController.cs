@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [AllowAnonymous]
     public class ActivitiesController : BaseApiController
     {
 
@@ -29,6 +28,9 @@ namespace API.Controllers
             //Mediator is smart enough to recognize to look inside the body of the request (Activity activity) to get that object and compare the properties avalable inside activity and if they match it that activity you want to pass as parameter and it will look inside the body and going get it.
         }
 
+        //Only host can edit and delete an activity
+        //Check IdentityServiceExtensions and IsHostRequirement
+        [Authorize(Policy = "IsActivityHost")]
         [HttpPut("{id}")]
         public async Task<IActionResult> EditActivity(Guid id, Activity activity)
         {
@@ -36,10 +38,21 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Edit.Command { Activity = activity }));
         }
 
+        //Only host can edit and delete an activity
+        //Check IdentityServiceExtensions and IsHostRequirement
+        [Authorize(Policy = "IsActivityHost")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteActivity(Guid id)
         {
             return HandleResult(await Mediator.Send(new Delete.Command { Id = id })); //{Id = id} - object initializer
+        }
+
+        //Method to Update Attendance
+        //Each time sending request it will activate command UpdateAttendance
+        [HttpPost("{id}/attend")]
+        public async Task<IActionResult> Attend(Guid id)
+        {
+            return HandleResult(await Mediator.Send(new UpdateAttendance.Command { Id = id })); //{Id = id} - object initializer
         }
     }
 }

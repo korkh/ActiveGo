@@ -1,8 +1,9 @@
-namespace Domain
-{
-    public class Activity
-    {
+using Application.Profiles;
 
+namespace Application.Activities
+{
+    public class ActivityDto
+    {
         public Guid Id { get; set; }
         public string Title { get; set; }
         public DateTime Date { get; set; }
@@ -10,8 +11,8 @@ namespace Domain
         public string Category { get; set; }
         public string City { get; set; }
         public string Venue { get; set; }
+        public string HostUsername { get; set; }
         public bool IsCancelled { get; set; }
-        public ICollection<ActivityAttendee> Attendees { get; set; } = new List<ActivityAttendee>(); //we are adding collection of attendees to prevent assigning null to Attendees in responses, so we are initializing a List
-
+        public ICollection<Profile> Attendees { get; set; } //DO NOT USE AutoMapper!
     }
 }

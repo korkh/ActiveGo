@@ -10,7 +10,7 @@ namespace API.Controllers
     {
         private IMediator _mediator;
 
-        protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
+        protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>(); //assign a value to the _mediator variable if it is currently null (??=)  If it is null, it proceeds to the next step. Otherwise, it skips the assignment and returns the current value of _mediator. 
 
         protected ActionResult HandleResult<T>(Result<T> result)
         {

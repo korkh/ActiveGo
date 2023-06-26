@@ -1,7 +1,9 @@
 using Application.Core;
+using Application.Interfaces;
 using Domain;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Storage;
 
 namespace Application.Activities
@@ -24,14 +26,28 @@ namespace Application.Activities
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;
+            private readonly IUserAccessor _userAccessor;
 
-            public Handler(DataContext context)
+            public Handler(DataContext context, IUserAccessor userAccessor)
             {
+                _userAccessor = userAccessor;
                 _context = context;
 
             }
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
+                //Creating activity attendee
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == _userAccessor.GetUserName());
+
+                var attendee = new ActivityAttendee
+                {
+                    AppUser = user,
+                    Activity = request.Activity,
+                    IsHost = true
+                };
+
+                request.Activity.Attendees.Add(attendee); //add new created attendee
+
                 _context.Activities.Add(request.Activity); //Add used because we are adding activity in memory. We are not touching database at this point. No need AddAsync
                 // await _context.SaveChangesAsync();
                 // //Unit it's just an object that mediator provides (without any value), but it tells to API that request is finished. Therefore we need to complete by returning something in our case it's Unit.Value, but in reality it equivalent to nothing.
