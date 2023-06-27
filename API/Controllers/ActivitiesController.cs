@@ -21,7 +21,7 @@ namespace API.Controllers
         }
 
         //in that method we are returning nothing. And when we are using IActionRequest it gives us access to the http response types which returns Ok(), return back request, return "Not found" but we don't need to specify the type we returning here
-        [HttpPost()]
+        [HttpPost]
         public async Task<IActionResult> CreateActivity(Activity activity)
         {
             return HandleResult(await Mediator.Send(new Create.Command { Activity = activity }));
