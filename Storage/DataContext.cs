@@ -10,8 +10,9 @@ namespace Storage
         {
         }
 
-        public DbSet<Activity> Activities { get; set; }
-        public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
+        public DbSet<Activity> Activities { get; set; } //now we can add migration
+        public DbSet<ActivityAttendee> ActivityAttendees { get; set; } //now we can add migration
+        public DbSet<Photo> Photos { get; set; } //now we can add migration
 
         //we need overide IdentityDbContext method
         protected override void OnModelCreating(ModelBuilder builder)

@@ -3,9 +3,11 @@ using Application.Core;
 using Application.Interfaces;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Infrastructure.Photos;
 using Infrastructure.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Storage;
 
 namespace API.Extensions
@@ -41,6 +43,9 @@ namespace API.Extensions
             //Services for relashonships
             services.AddHttpContextAccessor();
             services.AddScoped<IUserAccessor, UserAccessor>(); //makes available to be injected inside Application Handlers
+            //Photo managing services
+            services.AddScoped<IPhototAccessor, PhotoAccessor>();
+            services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
 
             return services;
         }
