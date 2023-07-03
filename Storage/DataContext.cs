@@ -13,6 +13,7 @@ namespace Storage
         public DbSet<Activity> Activities { get; set; } //now we can add migration
         public DbSet<ActivityAttendee> ActivityAttendees { get; set; } //now we can add migration
         public DbSet<Photo> Photos { get; set; } //now we can add migration
+        public DbSet<Comment> Comments { get; set; }
 
         //we need overide IdentityDbContext method
         protected override void OnModelCreating(ModelBuilder builder)
@@ -29,6 +30,11 @@ namespace Storage
                             .HasOne(u => u.Activity)
                             .WithMany(a => a.Attendees)
                             .HasForeignKey(aa => aa.ActivityId);
+
+            builder.Entity<Comment>()
+                .HasOne(a => a.Activity)
+                .WithMany(c => c.Comments)
+                .OnDelete(DeleteBehavior.Cascade); //if we will delete an activity it will cascade down comments assosiated with that activity
 
         }
     }

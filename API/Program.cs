@@ -1,5 +1,6 @@
 using API.Extensions;
 using API.Middleware;
+using API.SignalR;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -38,10 +39,10 @@ if (app.Environment.IsDevelopment())
 app.UseCors("CorsPolicy");
 
 app.UseAuthentication(); //should be before authorization
-
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chat"); //route to cennect to chatHub
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;

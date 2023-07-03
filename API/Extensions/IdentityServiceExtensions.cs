@@ -33,10 +33,26 @@ namespace API.Extensions
                     ValidateIssuer = false,
                     ValidateAudience = false,
                 };
+                //authentication for SignalR
+                opt.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"]; //allow us get token token from a query string we are sending with SignalR connection, when we are connecting to SignalR hub
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/chat"))) //if the path matches "/chat" - the endpoint for SignalR Hub
+                        {
+                            context.Token = accessToken; //add the token to the context. Now, inside the context we have an acces to this token. And we can get for example an UserName or something else from the token in context, but also will allow us authenticate to the SignalR hub;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
             //Only host can edit and delete an activity
-            services.AddAuthorization(opt => {
-                opt.AddPolicy("IsActivityHost", policy => {
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("IsActivityHost", policy =>
+                {
                     policy.Requirements.Add(new IsHostRequirement());
                 });
             });

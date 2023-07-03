@@ -214,7 +214,11 @@ export default class ActivityStore {
     } finally {
       runInAction(() => (this.loading = false));
     }
-  };
+  }; //cancelActivityToggle
+
+  clearSelectedActivity = () => {
+    this.selectedActivity = undefined;
+  }; //clearSelectedActivity
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
